@@ -1,0 +1,76 @@
+### 1. Publiczne pobranie listy sal (bez logowania - oczekiwane 200 OK)
+GET http://localhost:8080/api/rooms
+Accept: application/json
+
+### 2. Sprawdzenie tożsamości użytkownika 'jan' (Basic Auth - oczekiwane 200 OK)
+GET http://localhost:8080/api/auth/me
+Authorization: Basic jan user123
+Accept: application/json
+
+### 3. Sprawdzenie tożsamości administratora 'admin' (Basic Auth - oczekiwane 200 OK)
+GET http://localhost:8080/api/auth/me
+Authorization: Basic admin admin123
+Accept: application/json
+
+### 4. Próba dodania sali jako zwykły użytkownik 'jan' (po Zadaniu 1 oczekiwane 403 Forbidden)
+POST http://localhost:8080/api/rooms
+Authorization: Basic jan user123
+Content-Type: application/json
+
+{
+  "name": "Sala Nieautoryzowana 99",
+  "building": "Wydział Zarządzania",
+  "capacity": 20,
+  "equipment": "Tablica"
+}
+
+### 5. Dodanie nowej sali jako 'admin' (oczekiwane 201 Created)
+POST http://localhost:8080/api/rooms
+Authorization: Basic admin admin123
+Content-Type: application/json
+
+{
+  "name": "Laboratorium Inżynierii Oprogramowania 310",
+  "building": "Wydział Zarządzania - Skrzydło B",
+  "capacity": 30,
+  "equipment": "30 stacji roboczych, projektor 4K"
+}
+
+### 6. Utworzenie rezerwacji jako 'jan' (oczekiwane 201 Created)
+POST http://localhost:8080/api/reservations
+Authorization: Basic jan user123
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "title": "Seminarium dyplomowe",
+  "startTime": "2026-12-15T10:00:00",
+  "endTime": "2026-12-15T12:00:00"
+}
+
+### 7. Próba utworzenia kolidującej rezerwacji jako 'anna' (oczekiwane 409 Conflict - ProblemDetail)
+POST http://localhost:8080/api/reservations
+Authorization: Basic anna user123
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "title": "Kolidujące spotkanie",
+  "startTime": "2026-12-15T11:00:00",
+  "endTime": "2026-12-15T13:00:00"
+}
+
+### 8. Pobranie rezerwacji zalogowanego użytkownika 'jan' (oczekiwane 200 OK)
+GET http://localhost:8080/api/reservations/my
+Authorization: Basic jan user123
+Accept: application/json
+
+### 9. Próba anulowania rezerwacji ID=1 (należącej do 'jan') przez 'anna' (oczekiwane 403 Forbidden)
+PATCH http://localhost:8080/api/reservations/1/cancel
+Authorization: Basic anna user123
+Accept: application/json
+
+### 10. Anulowanie rezerwacji ID=1 przez właściciela 'jan' lub 'admin' (oczekiwane 200 OK)
+PATCH http://localhost:8080/api/reservations/1/cancel
+Authorization: Basic jan user123
+Accept: application/json

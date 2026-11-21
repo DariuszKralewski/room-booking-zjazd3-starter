@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Booking Service — Panel Klienta (Zjazd 3)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="container topbar-content">
+        <div>
+            <h1>Room Booking Service</h1>
+            <p class="subtitle">Zjazd 3: Spring Security • CORS • Fetch API • ProblemDetail (RFC 9457)</p>
+        </div>
+        <div id="auth-status" class="badge badge-guest">Niezalogowany (Gość)</div>
+    </div>
+</header>
+
+<main class="container">
+    <!-- Komunikaty i błędy RFC 9457 -->
+    <div id="alert-box" class="alert hidden"></div>
+
+    <!-- Sekcja logowania HTTP Basic -->
+    <section class="card">
+        <h2>1. Uwierzytelnianie (HTTP Basic + /api/auth/me)</h2>
+        <div class="login-grid">
+            <div>
+                <label for="username">Login</label>
+                <input type="text" id="username" placeholder="np. jan, anna lub admin" value="jan">
+            </div>
+            <div>
+                <label for="password">Hasło</label>
+                <input type="password" id="password" placeholder="Hasło" value="user123">
+            </div>
+            <div class="btn-group">
+                <button id="btn-login" class="btn btn-primary">Zaloguj i sprawdź /api/auth/me</button>
+                <button id="btn-logout" class="btn btn-secondary">Wyloguj</button>
+            </div>
+        </div>
+        <p class="hint">Konta testowe: <code>jan / user123</code> (USER), <code>anna / user123</code> (USER), <code>admin / admin123</code> (ADMIN)</p>
+    </section>
+
+    <div class="two-columns">
+        <!-- Lista sal + formularz dodawania dla ADMIN -->
+        <section class="card">
+            <div class="section-header">
+                <h2>2. Dostępne sale</h2>
+                <button id="btn-refresh-rooms" class="btn btn-small">Odśwież</button>
+            </div>
+            <table id="rooms-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nazwa</th>
+                    <th>Budynek</th>
+                    <th>Miejsca</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <hr>
+            <h3>Dodaj nową salę (tylko ADMIN)</h3>
+            <form id="create-room-form" class="stack-form">
+                <input type="text" id="room-name" placeholder="Nazwa sali (np. Sala 305)" required>
+                <input type="text" id="room-building" placeholder="Budynek (np. Wydział Zarządzania)" required>
+                <input type="number" id="room-capacity" placeholder="Pojemność" min="1" value="20" required>
+                <input type="text" id="room-equipment" placeholder="Wyposażenie (np. Projektor, Wi-Fi)">
+                <button type="submit" class="btn btn-primary">Utwórz salę (POST /api/rooms)</button>
+            </form>
+        </section>
+
+        <!-- Rezerwacje -->
+        <section class="card">
+            <div class="section-header">
+                <h2>3. Rezerwacje sal</h2>
+                <button id="btn-refresh-reservations" class="btn btn-small">Odśwież</button>
+            </div>
+
+            <form id="create-reservation-form" class="stack-form">
+                <select id="reservation-room-id" required>
+                    <option value="">-- Wybierz salę --</option>
+                </select>
+                <input type="text" id="reservation-title" placeholder="Tytuł rezerwacji (np. Konsultacje)" required>
+                <div class="row-2">
+                    <div>
+                        <label for="reservation-start">Początek</label>
+                        <input type="datetime-local" id="reservation-start" required>
+                    </div>
+                    <div>
+                        <label for="reservation-end">Koniec</label>
+                        <input type="datetime-local" id="reservation-end" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Zarezerwuj salę (POST /api/reservations)</button>
+            </form>
+
+            <hr>
+            <h3>Lista aktualnych rezerwacji</h3>
+            <table id="reservations-table">
+                <thead>
+                <tr>
+                    <th>Sala</th>
+                    <th>Tytuł</th>
+                    <th>Termin</th>
+                    <th>Autor</th>
+                    <th>Status</th>
+                    <th>Akcja</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
